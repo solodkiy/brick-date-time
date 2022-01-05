@@ -18,8 +18,8 @@
         "php-coveralls/php-coveralls": "^2.2",
         "vimeo/psalm": "4.4.1"
     },
-    "conflict": {
-        "brick/date-time": "*"
+    "replace": {
+        "brick/date-time": "0.3.2"
     },
     "suggest": {
         "ext-timezonedb": "This PECL extension provides up-to-date timezone information"
