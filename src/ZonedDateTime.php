@@ -183,6 +183,16 @@ class ZonedDateTime implements \JsonSerializable
     }
 
     /**
+     * @param string $input "Y-m-d H:i:s.u" or "Y-m-d H:i:s"
+     * @param TimeZone $timeZone
+     * @return ZonedDateTime
+     */
+    public static function fromSqlFormat(string $input, TimeZone $timeZone): ZonedDateTime
+    {
+        return self::of(LocalDateTime::fromSqlFormat($input), $timeZone);
+    }
+
+    /**
      * Obtains an instance of `ZonedDateTime` from a text string.
      *
      * Valid examples:
@@ -716,6 +726,28 @@ class ZonedDateTime implements \JsonSerializable
             return $result;
         }
         throw new \UnexpectedValueException('Incorrect type of UtcDateTime::ofInstant. Expected: UtcDateTime, got: ' . get_class($result));
+    }
+
+    public function toPhpFormat(string $format) : string
+    {
+        $result = $this->toDateTime()->format($format);
+        if ($result === false) {
+            throw new DateTimeException('Cannot format date to "' . $format . '"');
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int $precision
+     * @return string "Y-m-d H:i:s.u" or "Y-m-d H:i:s"
+     */
+    public function toUtcSqlFormat(int $precision) : string
+    {
+        if ($precision < 0 || $precision > 9) {
+            throw new \InvalidArgumentException('Precision must be between 0 and 9. Got: '. $precision);
+        }
+        return $this->toUtcDateTime()->getDateTime()->toSqlFormat($precision);
     }
 
     /**

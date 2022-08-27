@@ -306,6 +306,15 @@ final class Instant implements \JsonSerializable
     }
 
     /**
+     * Returns a UtcDateTime formed from this instant.
+     */
+    public function toUtcDateTime(): UtcDateTime
+    {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return UtcDateTime::ofInstant($this);
+    }
+
+    /**
      * Returns a decimal representation of the timestamp represented by this instant.
      *
      * The output does not have trailing decimal zeros.

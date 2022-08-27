@@ -102,4 +102,166 @@ class UtcDateTimeTest extends AbstractTestCase
             ['2001-02-03T01:02:03.456+00:00[Europe/London]', '2001-02-03', '01:02:03.456', 'Z', 'Z']
         ];
     }
+
+    /**
+     * @param string $input
+     * @param string $expected
+     * @return void
+     * @dataProvider provideFromSqlFormat
+     */
+    public function testFromSqlFormat(string $input, string $expected): void
+    {
+        $dateTime = UtcDateTime::fromSqlFormat($input);
+
+        $this->assertSame($expected, (string)$dateTime);
+    }
+
+    public function provideFromSqlFormat(): array
+    {
+        return [
+            [
+                '2018-10-13 12:13:14',
+                '2018-10-13T12:13:14Z'
+            ],
+            [
+                '2018-10-13 12:13:14.000',
+                '2018-10-13T12:13:14Z'
+            ],
+            [
+                '2018-10-13 12:13:14.000000',
+                '2018-10-13T12:13:14Z'
+            ],
+            [
+                '2018-10-13 12:13:14.000000001',
+                '2018-10-13T12:13:14.000000001Z'
+            ],
+            [
+                '2018-10-13 12:13:14.0000000059',
+                '2018-10-13T12:13:14.000000005Z'
+            ],
+            [
+                '2018-10-13 12:13:14.00203',
+                '2018-10-13T12:13:14.00203Z'
+            ],
+        ];
+    }
+
+    /**
+     * @param string $input
+     * @param string $timeZone
+     * @param string $expected
+     * @return void
+     * @dataProvider provideFromSqlFormatInvalidCases
+     */
+    public function testFromSqlFormatInvalidCases(string $input, string $timeZone, string $expected): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage($expected);
+
+        UtcDateTime::fromSqlFormat($input, TimeZone::parse($timeZone));
+    }
+
+    public function provideFromSqlFormatInvalidCases(): array
+    {
+        return [
+            [
+                '2018-10-23 12:13:14 ',
+                'Z',
+                'Input expected to be in "Y-m-d H:i:s" format. Got "2018-10-23 12:13:14 "'
+            ],
+            [
+                '2018-10-23 12:13:14.abba',
+                'Z',
+                'Incorrect fractional part in format. Got "2018-10-23 12:13:14.abba"'
+            ],
+            [
+                '2018-10-23T12:13:14Z',
+                'Z',
+                'Input expected to be in "Y-m-d H:i:s" format. Got "2018-10-23T12:13:14Z"'
+            ],
+            [
+                '2018-10-23T12:13:14',
+                'Europe/Moscow',
+                'Create UtcDateTime with not UTC timezone is not supported'
+            ],
+        ];
+    }
+
+    /**
+     * @param UtcDateTime $input
+     * @param int $precision
+     * @param string $expected
+     * @return void
+     * @dataProvider providerToCanonicalFormat
+     */
+    public function testToCanonicalFormat(UtcDateTime $input, int $precision, string $expected): void
+    {
+        $this->assertSame($expected, $input->toCanonicalFormat($precision));
+    }
+
+    public function providerToCanonicalFormat(): array
+    {
+        return [
+            [
+                UtcDateTime::parse('2022-03-30T00:00Z'),
+                6,
+                '2022-03-30T00:00:00.000000Z'
+            ],
+            [
+                UtcDateTime::parse('2022-03-30T10:11Z'),
+                6,
+                '2022-03-30T10:11:00.000000Z'
+            ],
+            [
+                UtcDateTime::parse('2022-03-30T10:11:12Z'),
+                6,
+                '2022-03-30T10:11:12.000000Z'
+            ],
+            [
+                UtcDateTime::parse('2022-03-30T10:11:12.1Z'),
+                6,
+                '2022-03-30T10:11:12.100000Z'
+            ],
+            [
+                UtcDateTime::parse('2022-03-30T10:11:12.001Z'),
+                6,
+                '2022-03-30T10:11:12.001000Z'
+            ],
+            [
+                UtcDateTime::parse('2022-03-30T10:11:12.000001Z'),
+                6,
+                '2022-03-30T10:11:12.000001Z'
+            ],
+            [
+                UtcDateTime::parse('2022-03-30T10:11:12.000000999Z'),
+                6,
+                '2022-03-30T10:11:12.000000Z'
+            ],
+            [
+                UtcDateTime::parse('1000-03-30T10:11:12.123456789Z'),
+                6,
+                '1000-03-30T10:11:12.123456Z'
+            ],
+            [
+                UtcDateTime::parse('1000-03-30T10:11:12.123456789Z'),
+                9,
+                '1000-03-30T10:11:12.123456789Z'
+            ],
+            [
+                UtcDateTime::parse('1000-03-30T10:11:12.123456789Z'),
+                0,
+                '1000-03-30T10:11:12Z'
+            ],
+            [
+                UtcDateTime::parse('1000-03-30T10:11:12.123456789Z'),
+                1,
+                '1000-03-30T10:11:12.1Z'
+            ],
+            [
+                UtcDateTime::parse('1000-03-30T10:11:12Z'),
+                9,
+                '1000-03-30T10:11:12.000000000Z'
+            ],
+        ];
+    }
 }

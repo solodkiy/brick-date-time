@@ -75,6 +75,34 @@ final class LocalDateTime implements \JsonSerializable
     }
 
     /**
+     * @param string $input "Y-m-d H:i:s.u" or "Y-m-d H:i:s"
+     * @return LocalDateTime
+     */
+    public static function fromSqlFormat(string $input): LocalDateTime
+    {
+        $originalInput = $input;
+        $dotPos = strpos($input, '.');
+        $nano = 0;
+        if ($dotPos !== false) {
+            $fractionalPart = substr($originalInput, $dotPos + 1);
+            $input = substr($originalInput, 0, $dotPos);
+            if (!is_numeric($fractionalPart)) {
+                throw new \InvalidArgumentException('Incorrect fractional part in format. Got "' . $originalInput. '"');
+            }
+            $fractionalPart = substr($fractionalPart, 0, 9); // Remove numbers from right
+            $fractionalPart = str_pad($fractionalPart, 9, '0');
+            $nano = (int)$fractionalPart;
+        }
+
+        $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input, new \DateTimeZone('UTC'));
+        if ($dateTime === false) {
+            throw new \InvalidArgumentException('Input expected to be in "Y-m-d H:i:s" format. Got "' . $originalInput. '"');
+        }
+
+        return self::fromDateTime($dateTime)->withNano($nano);
+    }
+
+    /**
      * Obtains an instance of `LocalDateTime` from a text string.
      *
      * @param string              $text   The text to parse, such as `2007-12-03T10:15:30`.
@@ -743,6 +771,33 @@ final class LocalDateTime implements \JsonSerializable
     public function toDateTimeImmutable() : \DateTimeImmutable
     {
         return \DateTimeImmutable::createFromMutable($this->toDateTime());
+    }
+
+    /**
+     * @param int $precision
+     * @return string
+     */
+    public function toSqlFormat(int $precision) : string
+    {
+        $nanoSize = 9;
+        if ($precision < 0 || $precision > $nanoSize) {
+            throw new \InvalidArgumentException('Precision must be between 0 and ' .$nanoSize . '. Got: '. $precision);
+        }
+
+
+        $result = $this->date
+            . ' '
+            . str_pad((string)$this->getHour(), 2, '0', STR_PAD_LEFT)
+            . ':'
+            . str_pad((string)$this->getMinute(), 2, '0', STR_PAD_LEFT)
+            . ':'
+            . str_pad((string)$this->getSecond(), 2, '0', STR_PAD_LEFT);
+
+        if ($precision > 0) {
+            $nano = str_pad((string)$this->getNano(), $nanoSize, '0', STR_PAD_LEFT);
+            $result .= '.' . substr($nano, 0, $precision);
+        }
+        return $result;
     }
 
     /**

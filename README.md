@@ -37,12 +37,26 @@ Requirements
 
 This library requires PHP 7.1 or later.
 
-Compatibility with brick/date-time
---------------------------------
+About this fork
+---------------
+
+### New functional
+* UtcDateTime class
+* Instant::toUtcDateTime() method
+* LocalDateTime::fromSqlFormat() method
+* LocalDateTime::toSqlFormat() method
+* ZonedDateTime::fromSqlFormat() method
+* ZonedDateTime::toSqlFormat() method
+* ZonedDateTime::toUtcDateTime() method
+* ZonedDateTime::toPhpFormat() method
+* ZonedDateTime::toUtcSqlFormat() method
+
+
+### Compatibility with brick/date-time
 
 | solodkiy/brick-date-time | brick/date-time |
 |--------------------------|-----------------|
-| 100.0.0                  | 0.3.2           |
+| 100.0.*                  | 0.3.2           |
 
 
 Overview

@@ -1243,4 +1243,126 @@ class LocalDateTimeTest extends AbstractTestCase
             [-1, 2, 3, 12, 34, 56, 78900000, '-0001-02-03T12:34:56.0789'],
         ];
     }
+
+    /**
+     * @param string $dateTime
+     * @param int $precision
+     * @param string $expected
+     * @return void
+     * @dataProvider provideToUtcSqlFormat
+     */
+    public function testToUtcSqlFormat(string $dateTime, int $precision, string $expected): void
+    {
+        $zonedDateTime = LocalDateTime::parse($dateTime);
+        $result = $zonedDateTime->toSqlFormat($precision);
+
+        $this->assertSame($expected, $result);
+    }
+
+    public function provideToUtcSqlFormat(): array
+    {
+        return [
+            [
+                '2018-10-13T12:34:00',
+                0,
+                '2018-10-13 12:34:00'
+            ],
+            [
+                '2018-01-02T03:04:05',
+                2,
+                '2018-01-02 03:04:05.00'
+            ],
+            [
+                '2018-10-13T12:34:15.159',
+                2,
+                '2018-10-13 12:34:15.15'
+            ],
+            [
+                '2018-10-13T12:34:15.159',
+                3,
+                '2018-10-13 12:34:15.159'
+            ],
+            [
+                '2018-10-13T12:34:15.159',
+                4,
+                '2018-10-13 12:34:15.1590'
+            ],
+            [
+                '2018-10-13T12:34:15.159',
+                9,
+                '2018-10-13 12:34:15.159000000'
+            ],
+            [
+                '2018-10-13T12:34:15.153456',
+                6,
+                '2018-10-13 12:34:15.153456'
+            ],
+            [
+                '2018-10-13T12:34:15.000016',
+                6,
+                '2018-10-13 12:34:15.000016'
+            ],
+            [
+                '2018-10-13T12:34:15.153456789',
+                9,
+                '2018-10-13 12:34:15.153456789'
+            ],
+            [
+                '2018-10-13T12:34:15.999999',
+                0,
+                '2018-10-13 12:34:15'
+            ],
+        ];
+    }
+
+    /**
+     * @param string $input
+     * @param string $expected
+     * @return void
+     * @dataProvider provideFromSqlFormat
+     */
+    public function testFromSqlFormat(string $input, string $expected): void
+    {
+        $dateTime = LocalDateTime::fromSqlFormat($input);
+
+        $this->assertSame($expected, (string)$dateTime);
+    }
+
+    public function provideFromSqlFormat(): array
+    {
+        return [
+            [
+                '2018-10-13 12:13:14',
+                '2018-10-13T12:13:14'
+            ],
+            [
+                '2018-10-13 12:13:14.10',
+                '2018-10-13T12:13:14.1'
+            ],
+            [
+                '2018-10-13 12:13:14.000',
+                '2018-10-13T12:13:14'
+            ],
+            [
+                '2018-10-13 12:13:14.000000',
+                '2018-10-13T12:13:14'
+            ],
+            [
+                '2018-10-13 12:13:14.000000001',
+                '2018-10-13T12:13:14.000000001'
+            ],
+            [
+                '2018-10-13 12:13:14.0000000059',
+                '2018-10-13T12:13:14.000000005'
+            ],
+            [
+                '2018-10-13 12:13:14.0000000009',
+                '2018-10-13T12:13:14'
+            ],
+            [
+                '2018-10-13 12:13:14.00203',
+                '2018-10-13T12:13:14.00203'
+            ],
+        ];
+    }
 }
