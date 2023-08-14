@@ -18,7 +18,7 @@
         "php-coveralls/php-coveralls": "^2.2",
         "vimeo/psalm": "4.23.0"
     },
-    "replaces": {
+    "replace": {
         "brick/date-time": "0.4.1",
         "solodkiy/date-time": "0.4.0-p7"
     },
