@@ -257,16 +257,17 @@ class ZonedDateTime implements JsonSerializable, Stringable
     }
 
     /**
-     * @deprecated Use getMonthValue() instead.
-     *             In a future version, getMonth() will return the Month enum.
+     * Returns the month-of-year as a Month enum.
      */
-    public function getMonth(): int
+    public function getMonth(): Month
     {
-        return $this->localDateTime->getMonthValue();
+        return $this->localDateTime->getMonth();
     }
 
     /**
      * Returns the month-of-year value from 1 to 12.
+     *
+     * @return int<1, 12>
      */
     public function getMonthValue(): int
     {
@@ -274,13 +275,8 @@ class ZonedDateTime implements JsonSerializable, Stringable
     }
 
     /**
-     * @deprecated Use getDayOfMonth() instead.
+     * @return int<1, 31>
      */
-    public function getDay(): int
-    {
-        return $this->localDateTime->getDayOfMonth();
-    }
-
     public function getDayOfMonth(): int
     {
         return $this->localDateTime->getDayOfMonth();
@@ -291,6 +287,9 @@ class ZonedDateTime implements JsonSerializable, Stringable
         return $this->localDateTime->getDayOfWeek();
     }
 
+    /**
+     * @return int<1, 366>
+     */
     public function getDayOfYear(): int
     {
         return $this->localDateTime->getDayOfYear();

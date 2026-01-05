@@ -25,90 +25,9 @@ enum Month: int implements JsonSerializable
     case DECEMBER = 12;
 
     /**
-     * Returns an instance of Month for the given month value.
-     *
-     * This method accepts Month instances in addition to integers, for backward compatibility with v0.5 constants
-     * that are now enum instances.
-     *
-     * @deprecated Use Month::from() to get a Month instance from its integer value.
-     *
-     * @param int|Month $value The month number, from 1 (January) to 12 (December).
-     *
-     * @return Month The Month instance.
-     *
-     * @throws DateTimeException
-     */
-    public static function of(int|Month $value): Month
-    {
-        if ($value instanceof Month) {
-            return $value;
-        }
-
-        Field\MonthOfYear::check($value);
-
-        return Month::from($value);
-    }
-
-    /**
-     * Returns the twelve months of the year in an array.
-     *
-     * @deprecated Use Month::cases() instead.
-     *
-     * @return Month[]
-     */
-    public static function getAll(): array
-    {
-        return Month::cases();
-    }
-
-    /**
-     * Returns the ISO-8601 month number.
-     *
-     * @deprecated Use Month::$value instead.
-     *
-     * @return int The month number, from 1 (January) to 12 (December).
-     */
-    public function getValue(): int
-    {
-        return $this->value;
-    }
-
-    /**
-     * Checks if this month matches the given month number.
-     *
-     * This method accepts Month instances in addition to integers, for backward compatibility with v0.5 constants
-     * that are now enum instances.
-     *
-     * @deprecated Use === instead for strict equality between Month instances,
-     *             or $monthEnum->value === $month for equality with a month-of-year integer value.
-     *
-     * @param int|Month $month The month number to test against.
-     *
-     * @return bool True if this month is equal to the given value, false otherwise.
-     */
-    public function is(int|Month $month): bool
-    {
-        if ($month instanceof Month) {
-            return $this === $month;
-        }
-
-        return $this->value === $month;
-    }
-
-    /**
-     * Returns whether this Month equals another Month.
-     *
-     * @deprecated Use strict equality between Month instances instead.
-     */
-    public function isEqualTo(Month $that): bool
-    {
-        return $this === $that;
-    }
-
-    /**
      * Returns the minimum length of this month in days.
      *
-     * @return int The minimum length of this month in days, from 28 to 31.
+     * @return int<28, 31>
      */
     public function getMinLength(): int
     {
@@ -122,7 +41,7 @@ enum Month: int implements JsonSerializable
     /**
      * Returns the maximum length of this month in days.
      *
-     * @return int The maximum length of this month in days, from 29 to 31.
+     * @return int<28, 31>
      */
     public function getMaxLength(): int
     {
@@ -138,6 +57,8 @@ enum Month: int implements JsonSerializable
      *
      * This returns the day-of-year that this month begins on, using the leap
      * year flag to determine the length of February.
+     *
+     * @return int<1, 336>
      */
     public function getFirstDayOfYear(bool $leapYear): int
     {
@@ -167,6 +88,8 @@ enum Month: int implements JsonSerializable
      * February has 28 days in a standard year and 29 days in a leap year.
      * April, June, September and November have 30 days.
      * All other months have 31 days.
+     *
+     * @return int<28, 31>
      */
     public function getLength(bool $leapYear): int
     {

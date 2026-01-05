@@ -21,8 +21,8 @@ final class MonthDay implements JsonSerializable, Stringable
     /**
      * Private constructor. Use of() to obtain an instance.
      *
-     * @param int $month The month-of-year, validated in the range of 1 to 12.
-     * @param int $day   The day-of-month, validated in the range of 1 to 31, valid for this month.
+     * @param int<1, 12> $month The month-of-year.
+     * @param int<1, 31> $day   The day-of-month, valid for this month.
      */
     private function __construct(
         private readonly int $month,
@@ -94,16 +94,17 @@ final class MonthDay implements JsonSerializable, Stringable
     }
 
     /**
-     * @deprecated Use getMonthValue() instead.
-     *             In a future version, getMonth() will return the Month enum.
+     * Returns the month-of-year as a Month enum.
      */
-    public function getMonth(): int
+    public function getMonth(): Month
     {
-        return $this->month;
+        return Month::from($this->month);
     }
 
     /**
      * Returns the month-of-year value from 1 to 12.
+     *
+     * @return int<1, 12>
      */
     public function getMonthValue(): int
     {
@@ -111,15 +112,9 @@ final class MonthDay implements JsonSerializable, Stringable
     }
 
     /**
-     * @deprecated Use getDayOfMonth() instead.
-     */
-    public function getDay(): int
-    {
-        return $this->day;
-    }
-
-    /**
      * Returns the day-of-month.
+     *
+     * @return int<1, 31>
      */
     public function getDayOfMonth(): int
     {
@@ -127,11 +122,7 @@ final class MonthDay implements JsonSerializable, Stringable
     }
 
     /**
-     * Returns -1 if this date is before the given date, 1 if after, 0 if the dates are equal.
-     *
-     * @return int [-1,0,1] If this date is before, on, or after the given date.
-     *
-     * @psalm-return -1|0|1
+     * @return -1|0|1 If this date is before, on, or after the given date.
      */
     public function compareTo(MonthDay $that): int
     {

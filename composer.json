@@ -6,7 +6,25 @@
         "Brick",
         "DateTime",
         "Date",
-        "Time"
+        "Time",
+        "DayOfWeek",
+        "Duration",
+        "Instant",
+        "Interval",
+        "LocalDate",
+        "LocalDateRange",
+        "LocalDateTime",
+        "LocalTime",
+        "Month",
+        "MonthDay",
+        "Period",
+        "Stopwatch",
+        "TimeZone",
+        "Year",
+        "YearMonth",
+        "YearMonthRange",
+        "YearWeek",
+        "ZonedDateTime"
     ],
     "license": "MIT",
     "require": {
@@ -15,11 +33,11 @@
     "require-dev": {
         "phpunit/phpunit": "^10.5",
         "php-coveralls/php-coveralls": "^2.2",
-        "vimeo/psalm": "5.17.0",
+        "vimeo/psalm": "5.25.0",
         "guzzlehttp/guzzle": "^7.0"
     },
     "replace": {
-        "brick/date-time": "0.6.5"
+        "brick/date-time": "0.7.0"
     },
     "conflict": {
         "solodkiy/date-time": "*"
