@@ -1020,7 +1020,7 @@ class ZonedDateTimeTest extends AbstractTestCase
             [
                 '2018-10-23 12:13:14 ',
                 'Europe/Minsk',
-                'Input expected to be in "Y-m-d H:i:s" format. Got "2018-10-23 12:13:14 "',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2018-10-23 12:13:14 ": Trailing data',
             ],
             [
                 '2018-10-23 12:13:14.abba',
@@ -1030,7 +1030,7 @@ class ZonedDateTimeTest extends AbstractTestCase
             [
                 '2018-10-23T12:13:14Z',
                 'Europe/Minsk',
-                'Input expected to be in "Y-m-d H:i:s" format. Got "2018-10-23T12:13:14Z"',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2018-10-23T12:13:14Z": Unexpected data found.; Trailing data',
             ],
         ];
     }
