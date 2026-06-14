@@ -20,6 +20,7 @@ use Brick\DateTime\TimeZone;
 use Brick\DateTime\TimeZoneOffset;
 use DateTime;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 use function json_encode;
@@ -1342,6 +1343,88 @@ class LocalDateTimeTest extends AbstractTestCase
             [
                 '2018-10-13 12:13:14.00203',
                 '2018-10-13T12:13:14.00203',
+            ],
+        ];
+    }
+
+    #[DataProvider('provideInvalidFromSqlFormat')]
+    public function testFromSqlFormatRejectsInvalidNativeDateTime(string $input, string $expectedMessage): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($expectedMessage);
+        LocalDateTime::fromSqlFormat($input);
+    }
+
+    public static function provideInvalidFromSqlFormat(): array
+    {
+        return [
+            [
+                '10000-01-01 00:00:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "10000-01-01 00:00:00": The parsed date was invalid; The separation symbol could not be found; Unexpected data found.; Trailing data',
+            ],
+            [
+                'abcd-01-01 00:00:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "abcd-01-01 00:00:00": The parsed date was invalid; Unexpected data found.; Not enough data available to satisfy format',
+            ],
+            [
+                '2026-00-01 00:00:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-00-01 00:00:00": The parsed date was invalid',
+            ],
+            [
+                '2026-13-01 00:00:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-13-01 00:00:00": The parsed date was invalid',
+            ],
+            [
+                '2026-01-00 00:00:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-01-00 00:00:00": The parsed date was invalid',
+            ],
+            [
+                '2026-01-32 00:00:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-01-32 00:00:00": The parsed date was invalid',
+            ],
+            [
+                '2026-02-30 12:00:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-02-30 12:00:00": The parsed date was invalid',
+            ],
+            [
+                '2026-01-01 -1:00:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-01-01 -1:00:00": Unexpected data found.',
+            ],
+            [
+                '2026-02-28 24:00:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-02-28 24:00:00": The parsed time was invalid',
+            ],
+            [
+                '2026-02-28 99:00:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-02-28 99:00:00": The parsed time was invalid',
+            ],
+            [
+                '2026-02-28 12:-1:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-02-28 12:-1:00": A two digit minute could not be found',
+            ],
+            [
+                '2026-02-28 12:60:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-02-28 12:60:00": The parsed time was invalid',
+            ],
+            [
+                '2026-02-28 12:99:00',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-02-28 12:99:00": The parsed time was invalid',
+            ],
+            [
+                '2026-02-28 12:00:-1',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-02-28 12:00:-1": A two digit second could not be found',
+            ],
+            [
+                '2026-02-28 12:00:60',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-02-28 12:00:60": The parsed time was invalid',
+            ],
+            [
+                '2026-02-28 12:00:99',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-02-28 12:00:99": The parsed time was invalid',
+            ],
+            [
+                '2026-02-28 12:00:00abc',
+                'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "2026-02-28 12:00:00abc": Trailing data',
             ],
         ];
     }

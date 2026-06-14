@@ -17,6 +17,9 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
 
+use function array_merge;
+use function array_unique;
+use function implode;
 use function intdiv;
 use function is_numeric;
 use function str_pad;
@@ -99,8 +102,23 @@ final class LocalDateTime implements JsonSerializable, Stringable
         }
 
         $dateTime = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $input, new DateTimeZone('UTC'));
-        if ($dateTime === false) {
-            throw new InvalidArgumentException('Input expected to be in "Y-m-d H:i:s" format. Got "' . $originalInput . '"');
+        $lastErrors = DateTimeImmutable::getLastErrors();
+        if (
+            $dateTime === false
+            || (
+                $lastErrors !== false
+                && ($lastErrors['warning_count'] > 0 || $lastErrors['error_count'] > 0)
+            )
+        ) {
+            $message = 'Input expected to be a valid date-time in "Y-m-d H:i:s" format. Got "' . $originalInput . '"';
+            if ($lastErrors !== false) {
+                $details = array_unique(array_merge($lastErrors['warnings'], $lastErrors['errors']));
+                if ($details !== []) {
+                    $message .= ': ' . implode('; ', $details);
+                }
+            }
+
+            throw new InvalidArgumentException($message);
         }
 
         return self::fromNativeDateTime($dateTime)->withNano($nano);
