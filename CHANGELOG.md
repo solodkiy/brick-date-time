@@ -1,5 +1,8 @@
 # Changelog
 
+## [104.0.1](https://github.com/solodkiy/brick-date-time/releases/tag/104.0.1)
+* `LocalDateTime::fromSqlFormat` and `ZonedDateTime::fromSqlFormat()` advance validation
+
 ## [104.0.0](https://github.com/solodkiy/brick-date-time/releases/tag/104.0.0)
 * Replaces [brick/date-time 0.7.0](https://github.com/brick/date-time/releases/tag/0.7.0)
 
